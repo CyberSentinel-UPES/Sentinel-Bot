@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 # command prefix
-bot = commands.Bot(command_prefix='~')
+bot = commands.Bot(command_prefix=',')
 bot.remove_command('help')
 
 # check for bot-commands channel
@@ -37,14 +37,14 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         emb = discord.Embed(
             title='Command Not Found',
-            description='404, Not Found\nRun `~help` to list all commands.',
+            description='404, Not Found\nRun `,help` to list all commands.',
             color=1040190
         )
         await ctx.send(embed=emb)
     else:
         emb = discord.Embed(
             title='Error',
-            description='An unknown error occured\nPlease refer to `~help`',
+            description='An unknown error occured\nPlease refer to `,help`',
             color=1040190
         )
         await ctx.send(embed=emb)
@@ -135,20 +135,23 @@ async def kick(ctx, user: discord.Member, reason='No reason specified !!!'):
 async def _help(ctx):
     emb = discord.Embed(
         title='List Of Commands',
-        description='''1. `~ping`
+        description='''1. `,ping`
 A command that shows the latency of the bot.
 
-2. `~clear`
+2. `,clear`
 A command to clear messages.
 Usage: `~clear <amount>(including this line)`
 
-3. `~invite`
+3. `,invite`
 A command to create an invite.
 Usage: `~invite <AGE>(In seconds) <USES>(In integer) <REASON>(optional)`
 
-4. `~kick`
+4. `,kick`
 A command to kick a member.
-Usage: `~kick <mention member>`''',
+Usage: `~kick <mention member>`
+
+5. `,help`
+Display this help message''',
         color=1040190
     )
     await ctx.send(embed=emb)
