@@ -32,40 +32,32 @@ async def on_ready():
     print('Bot Ready!!')
 
 # error handler
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandNotFound):
-        emb = discord.Embed(
-            title='Command Not Found',
-            description='404, Not Found\nRun `,help` to list all commands.',
-            color=1040190
-        )
-        await ctx.send(embed=emb)
-    else:
-        emb = discord.Embed(
-            title='Error',
-            description='An unknown error occured\nPlease refer to `,help`',
-            color=1040190
-        )
-        await ctx.send(embed=emb)
+# @bot.event
+# async def on_command_error(ctx, error):
+#     if isinstance(error, commands.CommandNotFound):
+#         emb = discord.Embed(
+#             title='Command Not Found',
+#             description='404, Not Found\nRun `,help` to list all commands.',
+#             color=1040190
+#         )
+#         await ctx.send(embed=emb)
+#     else:
+#         emb = discord.Embed(
+#             title='Error',
+#             description='An unknown error occured\nPlease refer to `,help`',
+#             color=1040190
+#         )
+#         await ctx.send(embed=emb)
 
 # check the latency of the bot
 @bot.command()
 async def ping(ctx):
-    if check_channel(ctx, 'bot-commands'):
-        emb = discord.Embed(
-            title='Ping',
-            description=f'{round(bot.latency*1000)} ms',
-            color=1040190
-        )
-        await ctx.send(embed=emb)
-    else:
-        emb = discord.Embed(
-            title='Not Allowed',
-            description='Inappropriate Channel !! :(',
-            color=1040190
-        )
-        await ctx.send(embed=emb)
+    emb = discord.Embed(
+        title='Ping',
+        description=f'{round(bot.latency*1000)} ms',
+        color=1040190
+    )
+    await ctx.send(embed=emb)
 
 # to clear some ammount of messages
 @bot.command()
@@ -83,12 +75,12 @@ async def clear(ctx,amount=1):
 
 # generate an invite
 @bot.command()
-async def invite(ctx, age, uses, reason=''):
+async def invite(ctx, age, uses):
     if check_channel(ctx, 'bot-commands'):
-        link = await ctx.channel.create_invite(max_age=int(age), max_uses=int(uses), reason=reason)
+        link = await ctx.channel.create_invite(max_age=int(age), max_uses=int(uses), reason='')
         emb = discord.Embed(
             title='Link Created',
-            description=f'Max Age: {age}\nMax Uses: {uses}\nReason: {reason}\nLink: {link}',
+            description=f'Max Age: {age}\nMax Uses: {uses}\nLink: {link}',
             color=1040190
         )
         await ctx.send(embed=emb)
@@ -106,22 +98,13 @@ async def invite(ctx, age, uses, reason=''):
 async def kick(ctx, user: discord.Member, reason='No reason specified !!!'):
     allowed_roles = ['sensei', 'heads', 'admins']
     if check_role(ctx, allowed_roles):
-        allowed_roles = ['core-team', 'sentinels']
-        if check_role_user(user, allowed_roles):
-            await user.kick(reason=reason)
-            emb = discord.Embed(
-                title='User Kicked',
-                description=f'{user.mention} kicked\nBy: {ctx.message.author.mention}\nReason: {reason}',
-                color=1040190
-            )
-            await ctx.send(embed=emb)
-        else:
-            emb = discord.Embed(
-                title='Not Allowed',
-                description='This role cannot be kicked.',
-                color=1040190
-            )
-            await ctx.send(embed=emb)
+        await user.kick(reason=reason)
+        emb = discord.Embed(
+            title='User Kicked',
+            description=f'{user.mention} kicked\nBy: {ctx.message.author.mention}\nReason: {reason}',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
     else:
         emb = discord.Embed(
             title='Not Allowed',
@@ -130,32 +113,41 @@ async def kick(ctx, user: discord.Member, reason='No reason specified !!!'):
         )
         await ctx.send(embed=emb)
 
+# to report a member
+@bot.command()
+async def report(ctx, user: discord.Member, reason):
+    channel_id = discord.utils.get(ctx.guild.channels, name='reports').id
+    channel = bot.get_channel(channel_id)
+    emb = discord.Embed(
+        title='Report',
+        color=1040190
+    )
+    emb.add_field(name='By', value=ctx.message.author.mention, inline=False)
+    emb.add_field(name='To', value=user.mention, inline=False)
+    emb.add_field(name='Reason', value=reason, inline=False)
+    await channel.send(embed=emb)
+    emb = discord.Embed(
+        title='Successful',
+        description='The user was reported successfully.',
+        color=1040190
+    )
+    await ctx.send(embed=emb)
+
 # help command 
 @bot.command(name='help')
 async def _help(ctx):
     emb = discord.Embed(
         title='List Of Commands',
-        description='''1. `,ping`
-A command that shows the latency of the bot.
-
-2. `,clear`
-A command to clear messages.
-Usage: `~clear <amount>(including this line)`
-
-3. `,invite`
-A command to create an invite.
-Usage: `~invite <AGE>(In seconds) <USES>(In integer) <REASON>(optional)`
-
-4. `,kick`
-A command to kick a member.
-Usage: `~kick <mention member>`
-
-5. `,help`
-Display this help message''',
         color=1040190
     )
+    channel = discord.ChannelType
+    emb.add_field(name='1. `,help`', value='Display this help message.', inline=False)
+    emb.add_field(name='2. `,ping`', value='A command that shows the latency of the bot.', inline=False)
+    emb.add_field(name='3. `,clear`', value='A command to clear messages.\nUsage: `,clear <amount>(including this line)`', inline=False)
+    emb.add_field(name='4. `,invite`', value='A command to create an invite.\nUsage: `,invite <AGE>(In seconds) <USES>(In integer)`', inline=False)
+    emb.add_field(name='5. `,kick`', value='A command to kick a member.\nUsage: `,kick <mention member>`', inline=False)
+    emb.add_field(name='6. `,report`', value='A command to report a member.\nUsage: `,report <mention member> <reason>`')
     await ctx.send(embed=emb)
-
 
 # test command
 @bot.command()
