@@ -32,22 +32,22 @@ async def on_ready():
     print('Bot Ready!!')
 
 # error handler
-# @bot.event
-# async def on_command_error(ctx, error):
-#     if isinstance(error, commands.CommandNotFound):
-#         emb = discord.Embed(
-#             title='Command Not Found',
-#             description='404, Not Found\nRun `,help` to list all commands.',
-#             color=1040190
-#         )
-#         await ctx.send(embed=emb)
-#     else:
-#         emb = discord.Embed(
-#             title='Error',
-#             description='An unknown error occured\nPlease refer to `,help`',
-#             color=1040190
-#         )
-#         await ctx.send(embed=emb)
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        emb = discord.Embed(
+            title='Command Not Found',
+            description='404, Not Found\nRun `,help` to list all commands.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Error',
+            description='An unknown error occured\nPlease refer to `,help`',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
 
 # check the latency of the bot
 @bot.command()
