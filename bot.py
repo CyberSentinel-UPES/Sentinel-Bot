@@ -133,6 +133,46 @@ async def report(ctx, user: discord.Member, reason):
     )
     await ctx.send(embed=emb)
 
+# to give roles to members
+@bot.command()
+async def grole(ctx, user: discord.Member, role: discord.Role):
+    allowed_roles = ['admins', 'heads', 'sensei']
+    if check_role(ctx, allowed_roles):
+        user.add_roles(role)
+        emb = discord.Embed(
+            title='Role Given',
+            description=f'User {user.mention} is added to the role {role.mention}',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Not Allowed',
+            description='You are not allowed to use this command.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+
+# to remove roles from members
+@bot.command()
+async def rrole(ctx, user: discord.Member, role: discord.Role):
+    allowed_roles = ['admins', 'heads', 'sensei']
+    if check_role(ctx, allowed_roles):
+        user.remove_roles(role)
+        emb = discord.Embed(
+            title='Role Removed',
+            description=f'Role {role.mention} removed from user {user.mention}',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Not Allowed',
+            description='You are not allowed to use this command.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+
 # help command 
 @bot.command(name='help')
 async def _help(ctx):
@@ -147,6 +187,8 @@ async def _help(ctx):
     emb.add_field(name='4. `,invite`', value='A command to create an invite.\nUsage: `,invite <AGE>(In seconds) <USES>(In integer)`', inline=False)
     emb.add_field(name='5. `,kick`', value='A command to kick a member.\nUsage: `,kick <mention member>`', inline=False)
     emb.add_field(name='6. `,report`', value='A command to report a member.\nUsage: `,report <mention member> <reason>`')
+    emb.add_field(name='7. `,grole`', value='Give a role to a member.\nUsage: `,grole <mention member> <mention role>`')
+    emb.add_field(name='8. `,rrole`', value='Remove a role from a member.\nUsage: `,rrole <mention member> <mention role>`')
     await ctx.send(embed=emb)
 
 # test command
