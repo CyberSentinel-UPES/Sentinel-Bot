@@ -138,7 +138,7 @@ async def report(ctx, user: discord.Member, reason):
 async def grole(ctx, user: discord.Member, role: discord.Role):
     allowed_roles = ['admins', 'heads', 'sensei']
     if check_role(ctx, allowed_roles):
-        user.add_roles(role)
+        await user.add_roles(role)
         emb = discord.Embed(
             title='Role Given',
             description=f'User {user.mention} is added to the role {role.mention}',
@@ -158,7 +158,7 @@ async def grole(ctx, user: discord.Member, role: discord.Role):
 async def rrole(ctx, user: discord.Member, role: discord.Role):
     allowed_roles = ['admins', 'heads', 'sensei']
     if check_role(ctx, allowed_roles):
-        user.remove_roles(role)
+        await user.remove_roles(role)
         emb = discord.Embed(
             title='Role Removed',
             description=f'Role {role.mention} removed from user {user.mention}',
