@@ -186,9 +186,9 @@ async def _help(ctx):
     emb.add_field(name='3. `,clear`', value='A command to clear messages.\nUsage: `,clear <amount>(including this line)`', inline=False)
     emb.add_field(name='4. `,invite`', value='A command to create an invite.\nUsage: `,invite <AGE>(In seconds) <USES>(In integer)`', inline=False)
     emb.add_field(name='5. `,kick`', value='A command to kick a member.\nUsage: `,kick <mention member>`', inline=False)
-    emb.add_field(name='6. `,report`', value='A command to report a member.\nUsage: `,report <mention member> <reason>`')
-    emb.add_field(name='7. `,grole`', value='Give a role to a member.\nUsage: `,grole <mention member> <mention role>`')
-    emb.add_field(name='8. `,rrole`', value='Remove a role from a member.\nUsage: `,rrole <mention member> <mention role>`')
+    emb.add_field(name='6. `,report`', value='A command to report a member.\nUsage: `,report <mention member> <reason>`', inline=False)
+    emb.add_field(name='7. `,grole`', value='Give a role to a member.\nUsage: `,grole <mention member> <mention role>`', inline=False)
+    emb.add_field(name='8. `,rrole`', value='Remove a role from a member.\nUsage: `,rrole <mention member> <mention role>`', inline=False)
     await ctx.send(embed=emb)
 
 # test command
