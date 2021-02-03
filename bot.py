@@ -29,6 +29,7 @@ def check_role_user(user, roles):
 # when bot is ready
 @bot.event
 async def on_ready():
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=",help"))
     print('Bot Ready!!')
 
 # error handler
