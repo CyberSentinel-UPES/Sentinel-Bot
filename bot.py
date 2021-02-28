@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands
+import json
 
 # command prefix
 bot = commands.Bot(command_prefix=',')
 bot.remove_command('help')
 
-# check for bot-commands channel
+# check for a specific channel
 def check_channel(ctx, channel):
     if str(ctx.message.channel) == channel:
         return True
@@ -45,7 +46,7 @@ async def on_command_error(ctx, error):
     else:
         emb = discord.Embed(
             title='Error',
-            description='An unknown error occured\nPlease refer to `,help`',
+            description='An unknown error occured\nPlease refer to `,help`\nor cantact admins',
             color=1040190
         )
         await ctx.send(embed=emb)
@@ -77,7 +78,8 @@ async def clear(ctx,amount=1):
 # generate an invite
 @bot.command()
 async def invite(ctx, age, uses):
-    if check_channel(ctx, 'bot-commands'):
+    allowed_roles = ['sensei', 'heads', 'admins']
+    if check_role(ctx, allowed_roles):
         link = await ctx.channel.create_invite(max_age=int(age), max_uses=int(uses), reason='')
         emb = discord.Embed(
             title='Link Created',
@@ -174,6 +176,110 @@ async def rrole(ctx, user: discord.Member, role: discord.Role):
         )
         await ctx.send(embed=emb)
 
+# to kick all members of a role
+@commands.has_permissions(kick_members=True)
+@bot.command()
+async def kick_all(ctx, role: discord.Role):
+    allowed_roles = ['admins', 'heads', 'sensei']
+    if check_role(ctx, allowed_roles):
+        for member in ctx.guild.members:
+            if role in member.roles:
+                await ctx.guild.kick(member, reason='')
+        emb = discord.Embed(
+            title='All members kicked',
+            description=f'All members of role {role.mention} kicked.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Not Allowed',
+            description='You are not allowed to use this command.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+
+# add an event
+@bot.command()
+async def add_event(ctx, name):
+    allowed_roles = ['admins', 'heads', 'sensei']
+    if check_role(ctx, allowed_roles):
+        f = open('events.json', 'r')
+        events = json.load(f)
+        f.close()
+        event = {events.keys()[-1]+1:name}
+        events.update(event)
+        f = open('events.json', 'w')
+        events = json.dumps(events)
+        f.write(events)
+        f.close()
+        emb = discord.Embed(
+            title='Event Added',
+            description=f'Event added successfully.\n`id = {events.keys()[-1]}`',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Not Allowed',
+            description='You are not allowed to use this command.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+
+# remove an event
+@bot.command()
+async def rem_event(ctx, id):
+    allowed_roles = ['admins', 'heads', 'sensei']
+    if check_role(ctx, allowed_roles):
+        id = int(id)
+        f = open('events.json', 'r')
+        events = json.load(f)
+        f.close()
+        for event in events:
+            if events[event] == id:
+                del events[event]
+        events = json.dumps(events)
+        f = open('events.json', 'w')
+        f.write(events)
+        f.close()
+        emb = discord.Embed(
+            title='Event Removed',
+            description=f'Event removed successfully.\n`id = {events.keys()[-1]}`',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Not Allowed',
+            description='You are not allowed to use this command.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+
+# show all active events
+@bot.command()
+async def show_events(ctx):
+    allowed_roles = ['admins', 'heads', 'sensei', 'core-team']
+    if check_role(ctx, allowed_roles):
+        emb = discord.Embed(
+            title='List of all events',
+            color=1040190
+        )
+        f = open('events.json', 'r')
+        events = json.load(f)
+        f.close()
+        for event in events:
+            emb.add_field(name=f'{event}', value=f'{events][event]}')
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(
+            title='Not Allowed',
+            description='You are not allowed to use this command.',
+            color=1040190
+        )
+        await ctx.send(embed=emb)
+
 # help command 
 @bot.command(name='help')
 async def _help(ctx):
@@ -190,6 +296,7 @@ async def _help(ctx):
     emb.add_field(name='6. `,report`', value='A command to report a member.\nUsage: `,report <mention member> <reason>`', inline=False)
     emb.add_field(name='7. `,grole`', value='Give a role to a member.\nUsage: `,grole <mention member> <mention role>`', inline=False)
     emb.add_field(name='8. `,rrole`', value='Remove a role from a member.\nUsage: `,rrole <mention member> <mention role>`', inline=False)
+    emb.add_field(name='9. `,kick_all`', value='Kick all members of a role\nUsage: `,kick_all <mention role>`', inline=False)
     await ctx.send(embed=emb)
 
 # test command
