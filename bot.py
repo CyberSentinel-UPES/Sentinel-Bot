@@ -270,7 +270,7 @@ async def show_events(ctx):
         events = json.load(f)
         f.close()
         for event in events:
-            emb.add_field(name=f'{event}', value=f'{events][event]}')
+            emb.add_field(name=f'{event}', value=f'{events[event]}')
         await ctx.send(embed=emb)
     else:
         emb = discord.Embed(
