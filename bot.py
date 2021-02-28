@@ -184,7 +184,7 @@ async def kick_all(ctx, role: discord.Role):
     if check_role(ctx, allowed_roles):
         for member in ctx.guild.members:
             if role in member.roles:
-                await member.kick(reason='')
+                await ctx.send(f',kick {member.mention}')
         emb = discord.Embed(
             title='All members kicked',
             description=f'All members of role {role.mention} kicked.',
