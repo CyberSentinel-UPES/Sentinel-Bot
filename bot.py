@@ -305,4 +305,7 @@ async def test(ctx, user: discord.Member):
     await ctx.send(f'{str(discord.utils.get(user.roles, name="admins"))}')
 
 if __name__ == '__main__':
-    bot.run('token here')
+    f = open('token', 'r')
+    token = f.read()
+    f.close()
+    bot.run(token)
