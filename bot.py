@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import json
 
+invites = {}
+
 # command prefix
 bot = commands.Bot(command_prefix=',')
 bot.remove_command('help')
@@ -27,11 +29,31 @@ def check_role_user(user, roles):
             return True
     return Flase
 
+# find invite
+def find_invite_by_code(invite_list, code):
+    # Simply looping through each invite in an
+    # invite list which we will get using guild.invites()
+    
+    for inv in invite_list:
+        
+        # Check if the invite code in this element
+        # of the list is the one we're looking for
+        
+        if inv.code == code:
+            
+            # If it is, we return it.
+            
+            return inv
+
 # when bot is ready
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=",help"))
     print('Bot Ready!!')
+    # Getting all the guilds our bot is in
+    for guild in bot.guilds:
+        # Adding each guild's invites to our dict
+        invites[guild.id] = await guild.invites()
 
 # error handler
 @bot.event
@@ -50,6 +72,27 @@ async def on_command_error(ctx, error):
             color=1040190
         )
         await ctx.send(embed=emb)
+
+# on member join
+@bot.event
+async def on_member_join(member):
+    invites_before_join = invites[member.guild.id]
+    invites_after_join = await member.guild.invites()
+    for invite in invites_before_join:
+        if invite.uses < find_invite_by_code(invites_after_join, invite.code).uses:
+            if invite.code == 'J2F99Se3K7'
+            role = discord.utils.get(guild.roles,name="CyberSec101")
+            member.add_roles(role)
+        invites[member.guild.id] = invites_after_join
+        return
+
+# when member leaves
+@bot.event
+async def on_member_remove(member):
+    # Updates the cache when a user leaves to make sure
+    # everything is up to date
+    
+    invites[member.guild.id] = await member.guild.invites()
 
 # check the latency of the bot
 @bot.command()
